@@ -1,5 +1,9 @@
 import os
+from dotenv import load_dotenv
 from google.adk.models.lite_llm import LiteLlm
+
+# Load environment variables from .env file
+load_dotenv()
 
 class AgentConfig:
     def __init__(self):
@@ -7,6 +11,7 @@ class AgentConfig:
         # Provider options: 'google', 'ollama', 'openrouter', 'nvidia'
         self.PROVIDER = os.getenv("ADEP_PROVIDER", "google").lower()
         self.MODEL_NAME = os.getenv("ADEP_MODEL_NAME", "gemini-3.1-flash-lite")
+
         
     @property
     def MODEL(self):
