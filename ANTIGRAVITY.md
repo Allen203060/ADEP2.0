@@ -26,7 +26,7 @@ When I ask you to implement a new feature or debug an issue, you must follow thi
 ## 5. Project Soul (`SOUL.md`)
 * You must maintain a `SOUL.md` file in the workspace root.
 * The `SOUL.md` file tracks the "soul" (core architecture, current progress, next logical steps, and key decisions) of the project.
-* Update `SOUL.md` incrementally at the end of each session or major progress checkpoint, keeping it concise to prevent excessive token consumption.
+* Update `SOUL.md` incrementally at the end of each session autonomously or major progress checkpoint, keeping it concise to prevent excessive token consumption.
 
 ## 6. Google ADK Version & Documentation
 * Always use the latest version of the Google Agent Development Kit (ADK) library.
