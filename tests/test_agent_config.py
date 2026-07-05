@@ -32,5 +32,13 @@ class TestAgentConfig(unittest.TestCase):
             self.assertTrue(isinstance(config.MODEL, LiteLlm))
             self.assertEqual(config.MODEL.model, "openrouter/meta-llama/llama-3.1-70b-instruct")
 
+    def test_nvidia_config(self):
+        with patch.dict(os.environ, {"ADEP_PROVIDER": "nvidia", "ADEP_MODEL_NAME": "meta/llama-3.1-nemotron-70b-instruct"}):
+            config = AgentConfig()
+            self.assertEqual(config.PROVIDER, "nvidia")
+            self.assertEqual(config.MODEL_NAME, "meta/llama-3.1-nemotron-70b-instruct")
+            self.assertTrue(isinstance(config.MODEL, LiteLlm))
+            self.assertEqual(config.MODEL.model, "nvidia_nim/meta/llama-3.1-nemotron-70b-instruct")
+
 if __name__ == '__main__':
     unittest.main()

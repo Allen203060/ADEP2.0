@@ -14,6 +14,12 @@ class TraceLogger:
         self.thinking_log_path = os.path.join(self.log_dir, "thinking.log")
         self.tool_log_path = os.path.join(self.log_dir, "tool_calls.log")
 
+        # Initialize/touch log files to guarantee they exist immediately upon setup
+        for log_path in [self.master_log_path, self.system_log_path, self.thinking_log_path, self.tool_log_path]:
+            with open(log_path, "a", encoding="utf-8"):
+                pass
+
+
     def _write_log(self, filepath, message):
         """Append timestamped message to target category log and the master log."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

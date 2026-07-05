@@ -9,11 +9,11 @@ class AgentConfig:
     def __init__(self):
         # Read environment configurations
         # Provider options: 'google', 'ollama', 'openrouter', 'nvidia'
-        self.PROVIDER = os.getenv("ADEP_PROVIDER", "google").lower()
-        self.MODEL_NAME = os.getenv("ADEP_MODEL_NAME", "gemini-3.1-flash-lite")
+        self.PROVIDER = os.getenv("ADEP_PROVIDER", "nvidia").lower()
+        self.MODEL_NAME = os.getenv("ADEP_MODEL_NAME", "nvidia/nemotron-3-nano-30b-a3b")
 
         
-    @property
+    @property   
     def MODEL(self):
         """Returns the configured model string or LiteLlm connector object."""
         if self.PROVIDER == "google":
@@ -30,7 +30,7 @@ class AgentConfig:
             
         elif self.PROVIDER == "nvidia":
             # NVIDIA Nemotron NIM endpoint
-            return LiteLlm(model=f"nvidia/{self.MODEL_NAME}")
+            return LiteLlm(model=f"nvidia_nim/{self.MODEL_NAME}")
             
         else:
             # Fallback direct LiteLLM provider string

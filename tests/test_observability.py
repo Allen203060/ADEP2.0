@@ -13,9 +13,10 @@ class TestTraceLogger(unittest.TestCase):
         self.logger = TraceLogger(log_dir=self.test_log_dir)
 
     def tearDown(self):
-        # Remove temporary test logs folder after run
-        if os.path.exists(self.test_log_dir):
-            shutil.rmtree(self.test_log_dir)
+        # Temporarily commented out to preserve logs for inspection
+        # if os.path.exists(self.test_log_dir):
+        #     shutil.rmtree(self.test_log_dir)
+        pass
 
     def test_log_creation(self):
         self.assertTrue(os.path.exists(self.test_log_dir))
