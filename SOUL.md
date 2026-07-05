@@ -13,6 +13,9 @@ ADEP (Agentic Data Engineering Pipeline) is a multi-agent system built using the
 * `requirements.txt`: Specified core project dependencies (ADK, LiteLLM, pandas, numpy, scikit-learn).
 * `utils/observability.py`: Created structured `TraceLogger` categorizing system, thinking, and tool execution logs into dedicated files.
 * `tests/`: Created test suite covering state management, environment configurations, self-healing executors, and logger outputs.
+* `Logistic/`: Completed preprocessing pipeline (`pipeline.py`), Google ADK agent (`logistic_agent.py`) with preprocessing and model training tools, and dynamic parameterized runner (`runner.py`) to preprocess data, train models, and serialize outputs.
+
+
 
 ## 🎯 Next Steps
 1. **Runner Entry Point (`main.py`):** Create the primary command-line execution entry point to run the problem identification and test agent invocation.

@@ -12,15 +12,21 @@ The Logistic Regression Pipeline is a specialized data preparation and execution
   6. **Feature Scaling:** Standardizes features (Z-score scaling) to center data around a mean of 0 and standard deviation of 1. This is critical for regularized (L1/L2) logistic regression and gradient-based optimization solvers.
 
 * **ADK Agent Integration:**
-  - `Logistic/logistic_agent.py`: Implements `Logistic_Agent` using `google.adk.agents.Agent`. It registers the preprocessing pipeline as a `FunctionTool` and executes it.
-  - `Logistic/runner.py`: Bootstraps the agent, configures `SHARED_GLOBALS` with raw datasets, and runs the preprocessing task.
+  - `Logistic/logistic_agent.py`: Implements `Logistic_Agent` using `google.adk.agents.Agent`. It registers the preprocessing pipeline and the model training wrapper as `FunctionTool` objects.
+  - `Logistic/runner.py`: Bootstraps the agent, configures `SHARED_GLOBALS` with raw datasets, and runs the preprocessing and model fitting tasks.
 
 ## 📈 Current Progress
 * `Logistic/SOUL_LOGI.md` & `Logistic/SOUL_LOGI`: Tracks architecture, progress, and next steps.
 * `Logistic/pipeline.py`: Custom sklearn-compatible preprocessing pipeline fully implemented.
-* `Logistic/logistic_agent.py`: Created the Google ADK Agent that wraps the pipeline.
-* `Logistic/runner.py`: Switched to `InMemoryRunner` and `asyncio.run` to fix agent invocation errors.
+* `Logistic/logistic_agent.py`: Created the Google ADK Agent containing preprocessing and training tools.
+* `Logistic/runner.py`: Integrated `InMemoryRunner` and `asyncio.run` supporting dynamic dataset configurations.
+* **Environment Setup:** Documented the requirement of `GEMINI_API_KEY` in `.env` for GenAI Client authentication.
+* **Model Training:** Implemented 80/20 train-test splits, fitted `LogisticRegression`, evaluated metrics (classification report & ROC-AUC), and serialized the model to `logistic_model.pkl`.
+* **Target Binarization:** Updated target preprocessing to automatically binarize multi-class numeric targets (collapsing values > 0 to 1) to address class imbalance and multi-class classification difficulty on datasets like heart disease.
+* **High Cardinality Handling:** Configured `ColumnStandardizer` to drop columns with more than 100 unique categories or matching high-cardinality metadata (e.g. `name`, `ticket`, `cabin`) to avoid high dimensionality.
+* **De-fragmentation Optimization:** Refactored `CategoricalEncoder` to perform batch concatenation of one-hot columns via `pd.concat` with index alignment, eliminating Pandas performance warnings and slow memory reallocation.
 
 ## 🎯 Next Steps
-1. **Testing & Performance Evaluation:** Run the runner script to confirm data is preprocessed and outputs correctly to `data/processed/logistic_ready_train.csv`.
-2. **Model Training Scaffolding:** Implement the model training stage (fitting `LogisticRegression` from scikit-learn on the preprocessed dataset).
+1. **Pipeline Integration:** Integrate this logistic sub-pipeline within the parent ADEP Orchestrator routing workflow.
+
+

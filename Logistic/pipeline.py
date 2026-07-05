@@ -25,11 +25,15 @@ class ColumnStandardizer(BaseEstimator, TransformerMixin):
                 if std_col in ['id', 'uuid', 'pk', 'key', 'index'] or std_col.endswith('_id'):
                     self.cols_to_drop.append(orig_col)
                     continue
-                # Match high cardinality text columns
-                if X_df[orig_col].dtype == 'object' or isinstance(X_df[orig_col].dtype, pd.CategoricalDtype):
+                # Match high cardinality text columns (e.g. string/categorical columns with high cardinality or specific names)
+                if not pd.api.types.is_numeric_dtype(X_df[orig_col]):
                     unique_count = X_df[orig_col].nunique()
-                    if unique_count == len(X_df) and len(X_df) > 5:
+                    is_high_cardinality = unique_count > 100
+                    is_common_id_name = std_col in ['name', 'ticket', 'cabin', 'home.dest', 'home_dest']
+                    if (unique_count == len(X_df) and len(X_df) > 5) or is_high_cardinality or is_common_id_name:
                         self.cols_to_drop.append(orig_col)
+
+
                         
         return self
 
@@ -44,7 +48,7 @@ class ColumnStandardizer(BaseEstimator, TransformerMixin):
         
         # Enforce types
         for col in X_df.columns:
-            if X_df[col].dtype == 'object':
+            if not pd.api.types.is_numeric_dtype(X_df[col]):
                 try:
                     non_nulls = X_df[col].dropna()
                     if len(non_nulls) > 0:
@@ -52,6 +56,7 @@ class ColumnStandardizer(BaseEstimator, TransformerMixin):
                         X_df[col] = pd.to_numeric(X_df[col])
                 except (ValueError, TypeError):
                     X_df[col] = X_df[col].astype(str)
+
             
             if pd.api.types.is_numeric_dtype(X_df[col]):
                 X_df[col] = X_df[col].astype(float)
@@ -195,10 +200,15 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
                 
         for col, cats in self.categories_.items():
             if col in X_df.columns:
+                new_cols = {}
                 for cat in cats:
-                    X_df[f"{col}_{cat}"] = (X_df[col] == cat).astype(float)
+                    new_cols[f"{col}_{cat}"] = (X_df[col] == cat).astype(float)
+                if new_cols:
+                    # Concat in one batch, aligning on the existing DataFrame index
+                    X_df = pd.concat([X_df, pd.DataFrame(new_cols, index=X_df.index)], axis=1)
                 X_df = X_df.drop(columns=[col])
-        return X_df
+        return X_df 
+
 
 class MulticollinearityFilter(BaseEstimator, TransformerMixin):
     """
@@ -214,8 +224,17 @@ class MulticollinearityFilter(BaseEstimator, TransformerMixin):
         X_df = pd.DataFrame(X)
         self.cols_to_drop_ = []
         
-        numeric_cols = [col for col in X_df.columns if pd.api.types.is_numeric_dtype(X_df[col])]
+        numeric_cols = []
+        for col in X_df.columns:
+            if pd.api.types.is_numeric_dtype(X_df[col]):
+                # Exclude constant columns (standard deviation near 0)
+                if X_df[col].std(ddof=0) > 1e-9:
+                    numeric_cols.append(col)
+                else:
+                    self.cols_to_drop_.append(col)
+                    
         if len(numeric_cols) < 2:
+
             return self
             
         current_cols = list(numeric_cols)
@@ -342,9 +361,14 @@ def preprocess_data(df, target_col=None, is_train=True, pipeline=None):
             y_processed = y.map(mapping)
         else:
             if not pd.api.types.is_numeric_dtype(y):
+                # Nominal/Text multiclass targets -> map to category codes
                 y_processed = y.astype('category').cat.codes
             else:
-                y_processed = y.astype(float)
+                # Collapse multiclass numeric targets into binary classes (0 = absent, 1 = present)
+                # Any value greater than 0 represents presence of the condition/class.
+                print(f"[Preprocessing] Collapsing {len(unique_y)} numeric classes into binary (0 vs 1)")
+                y_processed = (y > 0).astype(int)
+
                 
     if is_train:
         pipeline = create_logistic_pipeline()
