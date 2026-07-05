@@ -2,6 +2,7 @@ import os
 import sys
 import asyncio
 import argparse
+import pandas as pd
 
 # Ensure parent directory is in python search path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -55,6 +56,13 @@ def main():
         f"and then train a Logistic Regression model on the preprocessed data."
     ))
 
+    # Force the runner to check for the file and update the globals itself (Deterministic State Hook Retrieval)
+    processed_file = "data/processed/logistic_ready_train.csv"
+    if os.path.exists(processed_file):
+        df = pd.read_csv(processed_file)
+        SHARED_GLOBALS['logistic_processed_path'] = processed_file
+        SHARED_GLOBALS['logistic_processed_shape'] = df.shape
+        print(f"[Runner] State secured. Shape: {df.shape}")
 
     # 4. Verify updates
     print("\n=== Verifying SHARED_GLOBALS ===")
