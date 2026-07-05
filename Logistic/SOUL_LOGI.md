@@ -11,10 +11,16 @@ The Logistic Regression Pipeline is a specialized data preparation and execution
   5. **Multicollinearity Mitigation:** Uses a Pearson correlation matrix and Variance Inflation Factor (VIF) checks to identify and remove highly collinear features, preventing standard error inflation and unstable coefficient estimates.
   6. **Feature Scaling:** Standardizes features (Z-score scaling) to center data around a mean of 0 and standard deviation of 1. This is critical for regularized (L1/L2) logistic regression and gradient-based optimization solvers.
 
+* **ADK Agent Integration:**
+  - `Logistic/logistic_agent.py`: Implements `Logistic_Agent` using `google.adk.agents.Agent`. It registers the preprocessing pipeline as a `FunctionTool` and executes it.
+  - `Logistic/runner.py`: Bootstraps the agent, configures `SHARED_GLOBALS` with raw datasets, and runs the preprocessing task.
+
 ## 📈 Current Progress
-* `Logistic/SOUL_LOGI.md` [NEW]: Created the core architectural specifications and tracking document for the Logistic prep pipeline.
+* `Logistic/SOUL_LOGI.md` & `Logistic/SOUL_LOGI`: Tracks architecture, progress, and next steps.
+* `Logistic/pipeline.py`: Custom sklearn-compatible preprocessing pipeline fully implemented.
+* `Logistic/logistic_agent.py` [NEW]: Created the Google ADK Agent that wraps the pipeline.
+* `Logistic/runner.py` [NEW]: Created the runner script to execute the agent.
 
 ## 🎯 Next Steps
-1. **Pipeline Constructor (`Logistic/pipeline.py`):** Define a modular class or function using `scikit-learn` `Pipeline` and `ColumnTransformer` to sequence the data ingestion, imputation, encoding, and scaling steps.
-2. **Preventing Data Leakage:** Ensure all fit-transform steps (imputers, outlier thresholds, scalers) are fitted only on the training split and then transformed on the validation/test splits.
-3. **Multicollinearity Filter class:** Build a custom `scikit-learn` compatible transformer that calculates VIF and drops highly collinear columns dynamically during the pipeline fit step.
+1. **Testing & Performance Evaluation:** Run the runner script to confirm data is preprocessed and outputs correctly to `data/processed/logistic_ready_train.csv`.
+2. **Model Training Scaffolding:** Implement the model training stage (fitting `LogisticRegression` from scikit-learn on the preprocessed dataset).
