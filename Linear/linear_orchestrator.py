@@ -53,7 +53,10 @@ def create_linear_orchestrator(model=config.MODEL) -> Agent:
         STAGE 6: Scaling & Splitting
         - Prompt Coding_Agent: "FIRST, split the data into 80/20 training and testing sets. SECOND, fit a StandardScaler on the training features ONLY, and use it to transform both the training features and testing features. THIRD, reconstruct the final DataFrames. CRITICAL: When converting the scaled numpy arrays back to DataFrames, you MUST explicitly assign the index of the split target Series (e.g., `pd.DataFrame(X_train_scaled, index=y_train.index, columns=X.columns)`) so that `pd.concat([scaled_features, target], axis=1)` perfectly aligns the rows without scrambling the data or generating NaNs. Save to SHARED_GLOBALS.train_data and SHARED_GLOBALS.test_data."
         
-        When all stages are successfully completed, output a final summary of the dataset shapes.
+        STAGE 7: Model Training & Evaluation
+        - Prompt Coding_Agent: "Load the preprocessed training and testing DataFrames from SHARED_GLOBALS.train_data and SHARED_GLOBALS.test_data. Separate the features and the target (the target column name is in SHARED_GLOBALS.target_column). Fit a sklearn LinearRegression model on the training set. Evaluate the model on the testing set and print the R² Score, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE). Finally, serialize and save the trained model to 'data/processed/linear_model.pkl' using joblib or pickle."
+        
+        When all stages are successfully completed, output a final summary of the dataset shapes and explicitly print the evaluated R² Score, MAE, and RMSE.
         """
     )
 
@@ -128,23 +131,3 @@ async def run_linear_pipeline():
 
     logger.log_system("COMPLETE", "Linear Orchestrator Pipeline finished.")
 
-if __name__ == '__main__':
-    import pandas as pd
-    from utils.shared_environment import SHARED_GLOBALS
-    
-    # 1. Setup paths relative to this script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.abspath(os.path.join(script_dir, "..", "data", "raw", "raw_dataset.csv"))
-    
-    if not os.path.exists(csv_path):
-        print(f"❌ Error: Dataset not found at {csv_path}. Make sure the dataset is in data/raw/raw_dataset.csv")
-        sys.exit(1)
-        
-    # 2. Pre-load the shared globals for the test run
-    SHARED_GLOBALS['file_path'] = csv_path
-    SHARED_GLOBALS['target_column'] = 'price'
-    SHARED_GLOBALS['raw_data'] = pd.read_csv(csv_path)
-    
-    # 3. Execute the async pipeline
-    print("🚀 Starting local Linear Regression EDA run...")
-    asyncio.run(run_linear_pipeline())
