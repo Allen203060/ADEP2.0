@@ -1,0 +1,9 @@
+[2026-07-06 14:52:26] [SYSTEM-INIT] Initializing ADEP 2.0 Master Pipeline for: /home/allen20306/allen/ADEP/ADEP2.0/data/raw/raw_dataset.csv
+[2026-07-06 14:52:26] [SYSTEM-STAGE 1] Problem Identification & ML Routing
+[2026-07-06 14:53:29] [SYSTEM-STAGE 1 COMPLETE] Target Column: disease | Chosen Task: logistic
+[2026-07-06 14:53:29] [SYSTEM-STAGE 2] Delegating to LOGISTIC Orchestrator
+[2026-07-06 15:01:46] [SYSTEM-COMPLETE] Master Pipeline Execution Finished Successfully!
+[2026-07-06 15:11:17] [SYSTEM-INIT] Initializing ADEP 2.0 Master Pipeline for: /home/allen20306/allen/ADEP/ADEP2.0/data/raw/raw_dataset.csv
+[2026-07-06 15:11:17] [SYSTEM-STAGE 1] Problem Identification & ML Routing
+[2026-07-06 15:12:55] [SYSTEM-STAGE 1 COMPLETE] Target Column: disease | Chosen Task: linear
+[2026-07-06 15:12:55] [SYSTEM-STAGE 2] Delegating to LINEAR Orchestrator

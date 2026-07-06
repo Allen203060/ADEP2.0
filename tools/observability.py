@@ -20,7 +20,7 @@ class TraceLogger:
                 pass
 
 
-    def _write_log(self, filepath, message):
+    def _write_log(self, filepath, message, print_to_stdout=True):
         """Append timestamped message to target category log and the master log."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_msg = f"[{timestamp}] {message}\n"
@@ -33,16 +33,17 @@ class TraceLogger:
         with open(self.master_log_path, "a", encoding="utf-8") as f:
             f.write(formatted_msg)
             
-        # Print cleanly to stdout
-        print(formatted_msg.strip())
+        # Print cleanly to stdout only if enabled
+        if print_to_stdout:
+            print(formatted_msg.strip())
 
     def log_system(self, stage: str, message: str):
         """Log pipeline control flow and user decisions."""
         self._write_log(self.system_log_path, f"[SYSTEM-{stage.upper()}] {message}")
 
     def log_thinking(self, agent_name: str, thought: str):
-        """Log agent thoughts and reasoning."""
-        self._write_log(self.thinking_log_path, f"[{agent_name.upper()}] Thinking: {thought}")
+        """Log agent thoughts and reasoning (File only, hide from console)."""
+        self._write_log(self.thinking_log_path, f"[{agent_name.upper()}] Thinking: {thought}", print_to_stdout=False)
 
     def log_tool_call(self, agent_name: str, tool_name: str, arguments: dict):
         """Log what tool was invoked and with what arguments."""
